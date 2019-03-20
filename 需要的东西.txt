@@ -1,0 +1,2 @@
+1.nuget包：ODBC和sqlclient
+2.如果是Linux操作系统：需要装插件，通过身份验证协议

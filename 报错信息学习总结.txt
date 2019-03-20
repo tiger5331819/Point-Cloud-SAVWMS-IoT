@@ -1,0 +1,4 @@
+1.在复杂的程序中对象的使用一定要查找是否被实例化：报错：Value can not be null;
+2.在执行序列化（以二进制方式时，两个项目不仅需要命名空间相同，而且需要程序集名称也是一模一样）报错：未找到程序集+名称
+3..netcore程序使用数据库语句时需要添加nuget包：system.data.ODBC和system.data.sqlclient
+4.数据库执行插入操作时，记录到CSDN上。
