@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EVCS>
+  <Device>
+      <ID>服务器</ID>
+      <EVCSversion>v1.01</EVCSversion>
+      <Volumeversion>v0.07</Volumeversion>
+  </Device>
+  <NetLink>
+    <IP>
+      <server>127.0.0.1</server>
+      <serverpoint>2010</serverpoint>
+    </IP>
+  </NetLink>
+  <time>
+    <一频>
+      <beginhour>17</beginhour>
+      <beginminute>00</beginminute>
+      <endhour>7</endhour>
+      <endminute>00</endminute>
+    </一频>
+    <二频>
+      <beginhour>7</beginhour>
+      <beginminute>30</beginminute>
+      <endhour>13</endhour>
+      <endminute>00</endminute>
+    </二频>
+    <三频>
+      <beginhour>13</beginhour>
+      <beginminute>01</beginminute>
+      <endhour>16</endhour>
+      <endminute>59</endminute>
+    </三频>
+  </time>
+</EVCS>
