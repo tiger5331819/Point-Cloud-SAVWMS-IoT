@@ -6,19 +6,23 @@ using System.Threading;
 using static System.Console;
 namespace SAVWMS
 {
-    class ConnectionControlCenter
+    class ControlCenter
     {
         CenterManager centerManager;
-        public DeviceConnectControl[] DeviceC = new DeviceConnectControl[200];
-        ClientConnectControl[] UserC = new ClientConnectControl[200];
+        public DeviceConnectControl[] DeviceC;
+        ClientConnectControl[] UserC;
 
-        ConnectionControlCenter cc;
+        ControlCenter cc;
         string article;
+        int Max;
 
-        public ConnectionControlCenter(ref CenterManager c)
+        public ControlCenter(ref CenterManager c,int M)
         {
             centerManager = c;
-            for (int i = 0; i < 200; i++)
+            Max = M;
+            DeviceC=new DeviceConnectControl[Max];
+            UserC= new ClientConnectControl[Max];
+            for (int i = 0; i < Max; i++)
             {
                 DeviceC[i] = null;
                 UserC[i] = null;
@@ -33,10 +37,10 @@ namespace SAVWMS
         }
         void CreateThreadToCheckData()
         {
-            bool[] DeviceList = new bool[200];
-            bool[] UserList = new bool[200];
+            bool[] DeviceList = new bool[Max];
+            bool[] UserList = new bool[Max];
 
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < Max; i++)
             {
                 DeviceList[i] = false;
                 UserList[i] = false;

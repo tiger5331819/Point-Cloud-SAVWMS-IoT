@@ -15,10 +15,10 @@ namespace SAVWMS
             netManager = new DeviceNet(ref Data);
             signalChangeToDo = new SignalChangeToDo(ref Data, ref manager);
             //这个地方给出进程名字，可以加载配置文件，也可直接赋值
-            process1 = new Process();
-            process1.StartInfo.FileName = "BarCodeScanningSystem//BarCode";
-            process2 = new Process();
-            process2.StartInfo.FileName = "VolumeMeasuringSystem//Realsense_体积计算V2.0.exe";
+            //process1 = new Process();
+            //process1.StartInfo.FileName = "BarCodeScanningSystem//BarCode";
+            //process2 = new Process();
+            //process2.StartInfo.FileName = "VolumeMeasuringSystem//Realsense_体积计算V2.0.exe";
         }  
         public string SAVWMSversion { get; set; }//界面版本号
         public string Volumeversion { get; set; }//体积计算版本号

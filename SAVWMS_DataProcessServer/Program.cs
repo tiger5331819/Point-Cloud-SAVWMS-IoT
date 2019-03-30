@@ -7,7 +7,7 @@
             CenterManager centerManager = new CenterManager();
             centerManager.centerNetManager.serverLink();
 
-            ConnectionControlCenter connectionControlCenter = new ConnectionControlCenter(ref centerManager);
+            ControlCenter connectionControlCenter = new ControlCenter(ref centerManager);
         }
     }
 }

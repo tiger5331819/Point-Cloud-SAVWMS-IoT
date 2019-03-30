@@ -1,23 +1,28 @@
-﻿using System;
+﻿using SAVWMS.ConnectControl;
+using System;
 using System.Threading;
 
 namespace SAVWMS
 {
     class ClientConnectControl
     {
-        ConnectionControlCenter cc;
+        ControlCenter cc;
         public UserData data;
         CenterManager centerManager;
         DeviceConnectControl deviceC;
         ClientConnectControl userC;
+        MailBox mailBox;
+        int UserID;
 
-        public ClientConnectControl(ref UserData d, ref CenterManager cm, ref ConnectionControlCenter ccc)
+        public ClientConnectControl(ref UserData d, ref CenterManager cm, ref ControlCenter ccc,int i)
         {
             data = d;
             centerManager = cm;
             cc = ccc;
             deviceC = null;
             userC = this;
+            UserID = i;
+            mailBox=new UserMailBox(ref d,cm.iplist);
 
             Thread check = new Thread(CreateThreadToCheckData);
             check.IsBackground = true;
@@ -26,19 +31,24 @@ namespace SAVWMS
 
         void CreateThreadToCheckData()
         {
+            async void Receive()
+            {
+                while (data.Live)
+                    if (await mailBox.DOReceive())
+                    {
+                        switch (data.messagetype)
+                        {
+                            case Messagetype.order: orderTODO(); break;
+                            case Messagetype.update: updateTODO(); break;
+                        }
+                    }
+
+            }
+            Receive();
             while (data.Live)
             {
-                if (data.newdatachange())
-                {
-                    switch (data.messagetype)
-                    {
-                        case Messagetype.order: orderTODO(); break;
-                        //case Messagetype.update: updateTODO(); break;
-                    }
-                    data.flag = false;
-                }
-                else Thread.Sleep(100);
-
+                if (!data.Live) centerManager.iplist[UserID].ID = null;
+                Thread.Sleep(400);
             }
         }
 

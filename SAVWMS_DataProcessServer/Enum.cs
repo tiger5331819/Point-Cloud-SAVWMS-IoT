@@ -33,8 +33,6 @@ namespace SAVWMS
         sendvolume = 3,
         stopsendvolume = 4
     }
-
-
     /// <summary>
     /// package的数据说明
     /// </summary>
@@ -50,5 +48,4 @@ namespace SAVWMS
         update = 7,
         barvolumepackage = 8
     }
-    
 }

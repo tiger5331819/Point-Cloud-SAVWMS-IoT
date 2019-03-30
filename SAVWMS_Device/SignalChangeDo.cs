@@ -59,14 +59,14 @@ namespace SAVWMS
 
             //这个地方给进程赋值后再使用
             //manager.process1.Start();
-            manager.process2.Start();
+           // manager.process2.Start();
 
             Thread.Sleep(1000);
             //获取条码数据文件名
             GetFileName();
             Console.WriteLine("开始测试");
-            Console.WriteLine(manager.process1.StartInfo.FileName + "  play");
-            Console.WriteLine(manager.process2.StartInfo.FileName + "  play");
+            //Console.WriteLine(manager.process1.StartInfo.FileName + "  play");
+            //Console.WriteLine(manager.process2.StartInfo.FileName + "  play");
             sendBVFlag = true;
           
             //开始从文本中获取数据
@@ -78,14 +78,14 @@ namespace SAVWMS
             getVData.Start();
 
             //数据上传到数据处理服务武器
-            //Thread sendData = new Thread(sendDataToService);
-            //sendData.IsBackground = true;
-            //sendData.Start();
+            Thread sendData = new Thread(sendDataToService);
+            sendData.IsBackground = true;
+            sendData.Start();
 
             //数据上传到数据库服务器
-            Thread sendDataToSQL = new Thread(sendDataToSQLSever);
-            sendDataToSQL.IsBackground = true;
-            sendDataToSQL.Start();
+            //Thread sendDataToSQL = new Thread(sendDataToSQLSever);
+            //sendDataToSQL.IsBackground = true;
+            //sendDataToSQL.Start();
 
         }
         /// <summary>
@@ -183,10 +183,10 @@ namespace SAVWMS
         public void Stop()
         {
             sendBVFlag = false;
-            manager.process1.Kill();
-            Console.WriteLine("Kill program" + "体积计算 " + manager.Volumeversion + " successfully");
-            manager.process2.Kill();
-            Console.WriteLine("Kill program" + manager.BarcodeScanname + " successfully");
+            //manager.process1.Kill();
+            //Console.WriteLine("Kill program" + "体积计算 " + manager.Volumeversion + " successfully");
+            //manager.process2.Kill();
+            //Console.WriteLine("Kill program" + manager.BarcodeScanname + " successfully");
 
             //体积数据发送到数据处理服务器，由数据处理服务器上传至服务器.
         }

@@ -36,26 +36,12 @@ namespace SAVWMS
     [Serializable]
     public class barvolumedata
     {
+        private int bvdatanum=0;
+        public bvdata[] Bvdata=new bvdata[20];
         public barvolumedata()
         {
             bvdatanum = 0;
-            Bvdata = new bvdata[20];
         }
-        private int bvdatanum;
-        public bvdata[] Bvdata;//使用之前先new
-
-    }
-    /// <summary>
-    /// 更改自动控制的时间数据
-    /// </summary>
-    [Serializable]
-    public struct configtimexml
-    {
-        public string time;
-        public string beginhour;
-        public string beginminute;
-        public string endminute;
-        public string endhour;
     }
     /// <summary>
     /// tcp传输协议用到的ip和端口号
@@ -72,14 +58,11 @@ namespace SAVWMS
     {
         public Datatype datatype;
         public string ID;
-        public configtimexml[] configtime;
-        public bool flag;//这个是判断是否更新了信号
-        public Messagetype messagetype;
-        public Codemode codemode;
+        public Socket socket;
         public TypeData()
         {
-            datatype = new Datatype();
-            configtime = new configtimexml[3];
+            datatype = Datatype.CenterSever;
+            socket = null;
         }
     }
     public class CenterNetData
@@ -88,36 +71,7 @@ namespace SAVWMS
         public TypeNet typenet;
 
         public Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        public Dictionary<string, Socket> dic = new Dictionary<string, Socket>();
-
-        public bool Send(Package package)
-        {
-            try
-            {
-                byte[] bytes = null;
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    bf.Serialize(ms, package);
-                    ms.Flush();
-                    bytes = ms.ToArray();
-                }
-                socket.Send(bytes, bytes.Length, 0);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return false;
-            }
-            return true;
-        }
-        public virtual bool Send(Package package, string ip)
-        {
-           
-            return true;
-        }
-
-        public Package BytesToPackage(byte[] buffer)
+        public static Package BytesToPackage(byte[] buffer)
         {
             
             using (MemoryStream ms = new MemoryStream())
@@ -162,11 +116,6 @@ namespace SAVWMS
             }
             return package;
         }
-        /// <summary>
-        /// 算了这里我帮你写了，省的你自己再定义，当然这里还未完工
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
         public Package UserDataToPackage(TypeData data, Messagetype messagetype = Messagetype.package)
         {
             Package package = new Package();
@@ -197,32 +146,6 @@ namespace SAVWMS
             return package;
         }
 
-        public Package ServerDataToPackage(TypeData data, Messagetype messagetype = Messagetype.package)
-        {
-            Package package = new Package();
-            package.data = null;
-            try
-            {
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    bf.Serialize(ms, package);
-                    ms.Flush();
-
-                    package.message = messagetype;
-                    package.data = ms.ToArray();
-                }
-                return package;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-
-            }
-            return package;
-        }
-        public delegate void PackageToData(Package package, int DeviceID);
-        public delegate void PackageToData2(Package package, int DeviceID, Socket o);
         public delegate DeviceData PackageToDeviceData(Package package);
         public delegate UserData PackageToUserData(Package package);
     }
