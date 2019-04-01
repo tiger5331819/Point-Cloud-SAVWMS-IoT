@@ -42,6 +42,26 @@ namespace SAVWMS
         {
             bvdatanum = 0;
         }
+        public bool PutBvdata(bvdata d)
+        {
+            if (bvdatanum < 20)
+            {
+                Bvdata[bvdatanum] = d;
+                bvdatanum++;
+                return true;
+            }
+            else return false;
+        }
+        public int Getnum() { return bvdatanum; }
+        public void Setnum(int num) { bvdatanum = num; }
+        public void show()
+        {
+            foreach(bvdata b in Bvdata)
+            {
+                Console.WriteLine(b.BarcodeInfmation + "  " + b.BarcodeAcquisitionTime.ToString());
+                Console.WriteLine(b.PackageVolume.ToString() + "  " + b.VolumeAcquisitionTime.ToString());
+            }
+        }
     }
     /// <summary>
     /// tcp传输协议用到的ip和端口号
@@ -65,7 +85,7 @@ namespace SAVWMS
             socket = null;
         }
     }
-    public class CenterNetData
+    public class CenterNet
     {
         public string ID;//设备编号
         public TypeNet typenet;
@@ -84,7 +104,13 @@ namespace SAVWMS
                 return package;
             }
         }
-
+        public static Package CreateOrderString(string order)
+        {
+            Package package = new Package();
+            package.data = Encoding.UTF8.GetBytes(order);
+            package.message = Messagetype.order;
+            return package;
+        }
 
         public Package DeviceDataToPackage(TypeData data, Messagetype messagetype = Messagetype.package)
         {

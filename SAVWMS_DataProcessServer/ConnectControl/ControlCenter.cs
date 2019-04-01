@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SAVWMS.ConnectControl;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,15 +7,25 @@ using System.Threading;
 using static System.Console;
 namespace SAVWMS
 {
+    public struct DeviceList
+    {
+        public bool Live;
+        public int ID;
+        public string Name;
+    }
     class ControlCenter
     {
         CenterManager centerManager;
         public DeviceConnectControl[] DeviceC;
+        public DeviceList[] deviceList;
         ClientConnectControl[] UserC;
+        public TaskManager taskManager;
 
         ControlCenter cc;
         string article;
         int Max;
+        public int GetMax() { return Max; }
+        public IPList[] GetIPList() { return centerManager.iplist; } 
 
         public ControlCenter(ref CenterManager c,int M)
         {
@@ -31,36 +42,38 @@ namespace SAVWMS
             Thread check = new Thread(CreateThreadToCheckData);
             check.IsBackground = true;
             check.Start();
+            taskManager = new TaskManager(ref cc);
 
             shell();
 
         }
         void CreateThreadToCheckData()
         {
-            bool[] DeviceList = new bool[Max];
+            deviceList= new DeviceList[Max];
             bool[] UserList = new bool[Max];
 
             for (int i = 0; i < Max; i++)
             {
-                DeviceList[i] = false;
+                deviceList[i].Live = false;
                 UserList[i] = false;
             }
 
             while (true)
             {
-                for (int i = 0; i < 200; i++)
+                for (int i = 0; i < Max; i++)
                 {
                     IPList ip = centerManager.iplist[i];
                     if (ip.ID != null)
                     {
-                        if (!DeviceList[i])
+                        if (!deviceList[i].Live)
                         {
-                            DeviceList[i] = true;
-
-                            DeviceC[i] = new DeviceConnectControl(ref centerManager.Data.Devicedata[i], ref centerManager);
+                            deviceList[i].Live = true;
+                            deviceList[i].ID = i;
+                            deviceList[i].Name = centerManager.Data.Devicedata[i].IP;
+                            DeviceC[i] = new DeviceConnectControl(ref centerManager.Data.Devicedata[i], ref centerManager,Max);
                         }
                     }
-                    else if (DeviceList[i]) { DeviceList[i] = false; Console.WriteLine(centerManager.Data.Devicedata[i].ID); }
+                    else if (deviceList[i].Live) { deviceList[i].Live = false; Console.WriteLine(centerManager.Data.Devicedata[i].ID); }
 
                     ip = centerManager.UserList[i];
                     if (ip.ID != null)
@@ -68,7 +81,7 @@ namespace SAVWMS
                         if (!UserList[i])
                         {
                             UserList[i] = true;
-                            UserC[i] = new ClientConnectControl(ref centerManager.Data.Userdata[i], ref centerManager, ref cc);
+                            UserC[i] = new ClientConnectControl(ref centerManager.Data.Userdata[i], ref centerManager, ref cc,Max);
                         }
                     }
                     else if (UserList[i]) UserList[i] = false;
@@ -112,25 +125,25 @@ namespace SAVWMS
             DeviceConnectControl d = DeviceC[flag];
             WriteLine(d.ID());
 
-            while (true)
-            {
-                article = null;
-                article = ReadLine();
-                switch (article)
-                {
-                    case "back": return;
-                    case "play": TODO(d, Codemode.play); break;
-                    case "monitor": TODO(d, Codemode.monitor); break;
-                    case "sendvolume": TODO(d, Codemode.sendvolume); break;
-                    case "stopsendvolume": TODO(d, Codemode.stopsendvolume); break;
-                    case "stop": TODO(d, Codemode.stop); break;
-                }
-            }
+            //while (true)
+            //{
+            //    article = null;
+            //    article = ReadLine();
+            //    switch (article)
+            //    {
+            //        case "back": return;
+            //        case "play": TODO(d, Codemode.play); break;
+            //        case "monitor": TODO(d, Codemode.monitor); break;
+            //        case "sendvolume": TODO(d, Codemode.sendvolume); break;
+            //        case "stopsendvolume": TODO(d, Codemode.stopsendvolume); break;
+            //        case "stop": TODO(d, Codemode.stop); break;
+            //    }
+            //}
 
         }
-        void TODO(DeviceConnectControl Device, Codemode codemode)
-        {
-            Device.SendCode(codemode);
-        }
+        //void TODO(DeviceConnectControl Device, Codemode codemode)
+        //{
+        //    Device.SendCode(codemode);
+        //}
     }
 }

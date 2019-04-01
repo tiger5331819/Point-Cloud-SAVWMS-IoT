@@ -5,14 +5,17 @@ using System.Threading;
 
 namespace SAVWMS
 {
-    class DeviceConnectControl
+    public class DeviceConnectControl
     {
         CenterManager centerManager;
-        DeviceData data;
+        public DeviceData data;
         ClientConnectControl user;
         MailBox mailBox;
+        Queue<string> order = new Queue<string>(10);
+
         int DeviceID;
-        public Queue<Codemode> order = new Queue<Codemode>();
+
+        string Order;
 
         public DeviceConnectControl(ref DeviceData d, ref CenterManager c,int i)
         {
@@ -35,34 +38,32 @@ namespace SAVWMS
                 while (data.Live)
                     if (await mailBox.DOReceive())
                     {
-                        switch (data.messagetype)
-                        {
-                            case Messagetype.carinfomessage: ChangeCarMessage(); break;
-                            case Messagetype.volumepackage: ChangeCarMessage(); break;
-                            case Messagetype.package: ChangeCarMessage(); break;
-                        }
+                        //switch (data.messagetype)
+                        //{
+                        //    case Messagetype.carinfomessage: ChangeCarMessage(); break;
+                        //    case Messagetype.volumepackage: ChangeCarMessage(); break;
+                        //    case Messagetype.package: ChangeCarMessage(); break;
+                        //}
                     }
                     else { Thread.Sleep(100); sum++; }
             }
             Receive();
             while (data.Live)
             {
-                if (!data.Live) centerManager.Data.iplist[DeviceID].ID = null;
+                if (!data.Live) centerManager.iplist[DeviceID].ID = null;
 
-                if (sum == 100) { SendCode(Codemode.monitor); sum = 0; }
-
-                Codemode code;
-                if (order.TryDequeue(out code))
-                {
-                    SendCode(code);
-                }
+                if (sum == 100) { mailBox.Send(CenterNet.CreateOrderString("monitor")); sum = 0; }
+                if(order.TryDequeue(out Order))Send(Order);
             }
         }
 
+        public void Send(string order)
+        {
+            mailBox.Send(CenterNet.CreateOrderString(order));
+        }
         public string ID()
         {
             return data.ID;
         }
-
     }
 }

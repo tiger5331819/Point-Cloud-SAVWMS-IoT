@@ -12,10 +12,9 @@ namespace SAVWMS
 {
     [Serializable]
     public class DeviceData : TypeData
-    {
-        public DeviceData Newdata = null;
-       
+    {       
         public List<barvolumedata> barvolumedatas = new List<barvolumedata>(100);
+        public barvolumedata barvolumedata;
         public NetIP ip;
         public string IP;
         public Boolean Live = false;
@@ -36,6 +35,7 @@ namespace SAVWMS
 
         public Boolean Live = false;
         public Messagetype messagetype;
+        public Codemode codemode;
         public UserData()
         {
             DeviceID = null;
@@ -62,7 +62,7 @@ namespace SAVWMS
         }
     }
 
-    public class CenterServerNet : CenterNetData
+    public class CenterServerNet : CenterNet
     {
         CenterSeverData Data;
         IPAddress ip;

@@ -1,5 +1,6 @@
 ﻿using SAVWMS.ConnectControl;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace SAVWMS
@@ -9,18 +10,15 @@ namespace SAVWMS
         ControlCenter cc;
         public UserData data;
         CenterManager centerManager;
-        DeviceConnectControl deviceC;
-        ClientConnectControl userC;
         MailBox mailBox;
         int UserID;
+        DeviceTask task;
 
         public ClientConnectControl(ref UserData d, ref CenterManager cm, ref ControlCenter ccc,int i)
         {
             data = d;
             centerManager = cm;
             cc = ccc;
-            deviceC = null;
-            userC = this;
             UserID = i;
             mailBox=new UserMailBox(ref d,cm.iplist);
 
@@ -39,7 +37,7 @@ namespace SAVWMS
                         switch (data.messagetype)
                         {
                             case Messagetype.order: orderTODO(); break;
-                            case Messagetype.update: updateTODO(); break;
+                            //case Messagetype.update: updateTODO(); break;
                         }
                     }
 
@@ -57,56 +55,45 @@ namespace SAVWMS
             switch (data.codemode)
             {
                 case Codemode.monitor: monitor(data.codemode); break;
-                case Codemode.release: release(); break;
                 default: codemode(data.codemode); break;
             }
         }
 
         void monitor(Codemode codemode)
         {
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < centerManager.Max; i++)
             {
                 IPList ip = centerManager.iplist[i];
                 if (ip.IP == data.DeviceID)
                 {
-                    deviceC = cc.DeviceC[i];
-                    deviceC.adduser(ref userC, ip.ID);
-                    deviceC.order.Enqueue(codemode);
+                    task=cc.taskManager.GetDeviceTask(i);
+                    if (task == null)
+                    {
+                        string TaskCategory = "BVTask";
+                        string Taskname = "test";
+                        task = cc.taskManager.SetDeviceTask(TaskCategory,Taskname,i);
+                    }
                 }
             }
 
         }
-        void release()
-        {
-            if (deviceC.removeuser()) { data.DeviceID = null; deviceC = null; }
-            else Console.WriteLine("user release error");
-        }
         void codemode(Codemode codemode)
         {
-            if (deviceC == null) { return; }
-            deviceC.order.Enqueue(codemode);
+            object o = new object();
+            switch(codemode)
+            {
+                case Codemode.play:task.TaskRemote(1);break;
+                case Codemode.stop:task.TaskRemote(0);break;
+                case Codemode.sendvolume:task.GetResults(out o); show(o); break;
+            }
         }
-
-        //void updateTODO()
-        //{
-        //    deviceC.updatemessage(data.volume, data.configtime);
-        //}
-
-
-
-
-        //public void UpdateVolume(volumecontrol v)
-        //{
-        //    data.volume = v;
-
-        //    if (SendMessage(Messagetype.volumepackage)) Console.WriteLine("发送成功给用户！");
-        //    else Console.WriteLine("error！");
-        //}
-
-        public bool SendMessage(Messagetype messagetype)
+        void show(object o)
         {
-            if (centerManager.centerNetManager.Send(centerManager.centerNetManager.UserDataToPackage(data, messagetype), data.IP)) return true;
-            else return false;
+            List<barvolumedata> barvolumedatas = o as List<barvolumedata>;
+            foreach(barvolumedata a in barvolumedatas)
+            {
+                a.show();
+            }
         }
     }
 }

@@ -27,7 +27,6 @@ namespace SAVWMS.ConnectControl
             socket = d.socket;
             Data = d;
         }
-
         public bool Send(Package package)
         {
             try
@@ -62,7 +61,7 @@ namespace SAVWMS.ConnectControl
         /// <param name="o"></param>
         bool Receive()
         {
-            PackageToData packageToData = new PackageToData(Newbarvolumedata);
+            PackageToData packageToData = new PackageToData(NewBarVolData);
             //接受设备数据
                 try
                 {
@@ -73,8 +72,6 @@ namespace SAVWMS.ConnectControl
                     switch (package.message)
                     {
                         case Messagetype.package: NewDeviceData(package);return true;
-                        //case Messagetype.carinfomessage: packageToData(package); return true;
-                        case Messagetype.volumepackage: packageToData(package); return true;
                         case Messagetype.barvolumepackage: NewBarVolData(package); return true;
                         default:return false;
                     }
@@ -110,39 +107,22 @@ namespace SAVWMS.ConnectControl
 
         void NewBarVolData(Package package)
         {
-            bvdata theSendData = new bvdata();
-            using (MemoryStream ms = new MemoryStream())
-            {
-                ms.Write(package.data, 0, package.data.Length);
-                ms.Flush();
-                ms.Position = 0;
-                BinaryFormatter bf = new BinaryFormatter();
-                theSendData = (bvdata)bf.Deserialize(ms);
-            }
-        }
-        /// <summary>
-        /// 更改体积等信息
-        /// </summary>
-        /// <param name="package"></param>
-        void Newbarvolumedata(Package package)
-        {
             try
             {
+                bvdata theSendData = new bvdata();
                 using (MemoryStream ms = new MemoryStream())
                 {
                     ms.Write(package.data, 0, package.data.Length);
                     ms.Flush();
                     ms.Position = 0;
                     BinaryFormatter bf = new BinaryFormatter();
-
-                    Data.barvolumedata = (barvolumedata)bf.Deserialize(ms);
+                    theSendData = (bvdata)bf.Deserialize(ms);
                 }
-            }
-            catch (Exception ex)
+                if(!Data.barvolumedata.PutBvdata(theSendData)) Console.WriteLine("Put Bvdata error!");
+            }catch(Exception e)
             {
-                Console.WriteLine(ex.ToString());
+                Console.WriteLine(e.ToString());
             }
-
         }
     }
 
@@ -245,10 +225,10 @@ namespace SAVWMS.ConnectControl
                 switch(messagetype)
                 {
                     case Messagetype.package:Data = data;break;
-                    case Messagetype.update:
-                        Data.messagetype = package.message;
-                        Data.configtime = data.configtime;
-                        Data.volume = data.volume;break;
+                   // case Messagetype.update:
+                        //Data.messagetype = package.message;
+                        //Data.configtime = data.configtime;
+                        //Data.volume = data.volume;break;
                     default:Console.WriteLine("Func:NewUserData.messagetype is null"); break;
                 }
 
