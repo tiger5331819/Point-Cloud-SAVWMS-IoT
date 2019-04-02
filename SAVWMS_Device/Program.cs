@@ -9,7 +9,7 @@ namespace SAVWMS
             Manager manager = new Manager();
             manager.netManager.userconnect();
             
-            manager.signalChangeToDo.ChangeDo.Play();
+            //manager.signalChangeToDo.ChangeDo.Play();
 
 
             Console.ReadLine();

@@ -2,11 +2,24 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 
 namespace SAVWMS
 {
+    /// <summary>
+    /// 更改自动控制的时间数据
+    /// </summary>
+    [Serializable]
+    public struct configtimexml
+    {
+        public string time;
+        public string beginhour;
+        public string beginminute;
+        public string endminute;
+        public string endhour;
+    }
     /// <summary>
     /// 所有传送的数据都打包成package的形式，然后往外发送
     /// </summary>
@@ -28,6 +41,15 @@ namespace SAVWMS
         public DateTime VolumeAcquisitionTime;
         public decimal? PackageWeight;
         public DateTime WeightAcquisitionTime;
+        public void getbvdata()
+        {
+            BarcodeInfmation = "";
+            BarcodeAcquisitionTime = DateTime.Now;
+            PackageVolume = 0;
+            VolumeAcquisitionTime = DateTime.Now;
+            PackageWeight = 0;
+            WeightAcquisitionTime = DateTime.Now;
+        }
     }
     /// <summary>
     /// 收集到的bvdata每十条上传一次：从文件中收集那些数据，所以需要文件操作的一个方法
@@ -47,7 +69,8 @@ namespace SAVWMS
             if (bvdatanum < 20)
             {
                 Bvdata[bvdatanum] = d;
-                bvdatanum++;
+                Console.Write(bvdatanum);
+                bvdatanum++;              
                 return true;
             }
             else return false;
@@ -60,6 +83,17 @@ namespace SAVWMS
             {
                 Console.WriteLine(b.BarcodeInfmation + "  " + b.BarcodeAcquisitionTime.ToString());
                 Console.WriteLine(b.PackageVolume.ToString() + "  " + b.VolumeAcquisitionTime.ToString());
+            }
+        }
+
+        public barvolumedata Clone()
+        {
+            using (Stream objectStream = new MemoryStream())
+            {
+                IFormatter formatter = new BinaryFormatter();
+                formatter.Serialize(objectStream, this);
+                objectStream.Seek(0, SeekOrigin.Begin);
+                return formatter.Deserialize(objectStream) as barvolumedata;
             }
         }
     }
@@ -78,6 +112,10 @@ namespace SAVWMS
     {
         public Datatype datatype;
         public string ID;
+        public configtimexml[] configtime;
+        public bool flag;//这个是判断是否更新了信号
+        public Messagetype messagetype;
+        public Codemode codemode;
         public Socket socket;
         public TypeData()
         {

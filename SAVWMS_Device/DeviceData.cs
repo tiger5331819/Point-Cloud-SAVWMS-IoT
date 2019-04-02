@@ -18,6 +18,7 @@ namespace SAVWMS
         public barvolumedata barvolumedata;
         public NetIP ip;
         public string IP;
+        public new string codemode;
         public bool Live = false;
 
         public DeviceData()
@@ -121,7 +122,7 @@ namespace SAVWMS
         /// <param name="package"></param>
         void NewCode(Package package)
         {
-            Data.codemode = (Codemode)Convert.ToInt32(Encoding.UTF8.GetString(package.data, 0, package.data.Length));
+            Data.codemode = Encoding.UTF8.GetString(package.data, 0, package.data.Length);
             Data.Newdata = null;
             Data.messagetype = package.message;
 

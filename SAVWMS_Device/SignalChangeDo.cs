@@ -58,15 +58,16 @@ namespace SAVWMS
             //DelectDir(srcPath);
 
             //这个地方给进程赋值后再使用
-            //manager.process1.Start();
-           // manager.process2.Start();
+            //manager.process1.Start();           
+            manager.process2.Start();
+            manager.process2.StartInfo.FileName = "processkill.bat";
 
-            Thread.Sleep(1000);
+            //Thread.Sleep(1000);
             //获取条码数据文件名
             GetFileName();
-            Console.WriteLine("开始测试");
-            //Console.WriteLine(manager.process1.StartInfo.FileName + "  play");
-            //Console.WriteLine(manager.process2.StartInfo.FileName + "  play");
+            //Console.WriteLine("开始测试");
+            Console.WriteLine(manager.process1.StartInfo.FileName + "  play");
+            Console.WriteLine(manager.process2.StartInfo.FileName + "  play");
             sendBVFlag = true;
           
             //开始从文本中获取数据
@@ -184,9 +185,10 @@ namespace SAVWMS
         {
             sendBVFlag = false;
             //manager.process1.Kill();
-            //Console.WriteLine("Kill program" + "体积计算 " + manager.Volumeversion + " successfully");
-            //manager.process2.Kill();
-            //Console.WriteLine("Kill program" + manager.BarcodeScanname + " successfully");
+            Console.WriteLine("Kill program" + "体积计算 " + manager.Volumeversion + " successfully");
+            manager.process2.Start();
+            manager.process2.StartInfo.FileName = "process.bat";
+            Console.WriteLine("Kill program" + manager.BarcodeScanname + " successfully");
 
             //体积数据发送到数据处理服务器，由数据处理服务器上传至服务器.
         }
@@ -368,7 +370,7 @@ namespace SAVWMS
                     //向数据库发送消息
 
                     //数据库连接改到配置文件中
-                    string connectString = "Data Source=127.0.0.1;Initial Catalog=SAVWMS;Integrated Security=True;user id=sa;password=12345678910ding";
+                    string connectString = "Data Source=POINTCLOUD;Initial Catalog=SAVWMS;Integrated Security=True;user id=sa;password=PointCloud";
 
                     SqlConnection sqlCnt = new SqlConnection(connectString);
 

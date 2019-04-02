@@ -8,8 +8,8 @@ namespace SAVWMS
     public class DeviceConnectControl
     {
         CenterManager centerManager;
+        public List<barvolumedata> barvolumedatas;
         public DeviceData data;
-        ClientConnectControl user;
         MailBox mailBox;
         Queue<string> order = new Queue<string>(10);
 
@@ -17,13 +17,17 @@ namespace SAVWMS
 
         string Order;
 
+        public DeviceConnectControl()
+        {
+            Console.WriteLine("The DeviceConnectControl is null");
+        }
         public DeviceConnectControl(ref DeviceData d, ref CenterManager c,int i)
         {
             data = d;
             centerManager = c;
-            user = null;
             DeviceID = i;
             mailBox = new DeviceMailBox(ref d);
+            barvolumedatas = new List<barvolumedata>(100);
 
             Thread check = new Thread(CreateThreadToCheckData);
             check.IsBackground = true;
@@ -56,7 +60,6 @@ namespace SAVWMS
                 if(order.TryDequeue(out Order))Send(Order);
             }
         }
-
         public void Send(string order)
         {
             mailBox.Send(CenterNet.CreateOrderString(order));

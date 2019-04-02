@@ -58,8 +58,8 @@ namespace SAVWMS
             switch (Data.codemode)
             {
                 
-                case Codemode.play: ChangeDo.Play(); break;
-                case Codemode.stop: ChangeDo.Stop(); break;
+                case "play": test();break;//ChangeDo.Play(); break;
+                case "stop": ChangeDo.Stop(); break;
             }
         }
 
@@ -67,6 +67,34 @@ namespace SAVWMS
         {
             manager.netManager.Send(manager.netManager.DeviceDataToPackage(manager.Data, Messagetype.package));
             Console.WriteLine("succeed");
+        }
+        void test()
+        {
+            string vol;
+            string bar;
+            int volume = 0;
+            int barn = 0;
+            int flag = 0;
+            while(true)
+            {
+                if(flag>=20)
+                {
+                    Console.ReadLine();
+                    flag = 0;
+                }
+                vol = volume.ToString();
+                Console.WriteLine("vol success");
+                bar = barn.ToString();
+                Console.WriteLine("bar success");
+                manager.Data.barvolumedata.addVolumeData(vol);
+                manager.Data.barvolumedata.addBarData(bar);
+                Console.WriteLine("bar and vol success");
+                manager.netManager.Send(manager.netManager.DeviceDataToPackageReal(manager.Data, Messagetype.barvolumepackage));
+                volume++;
+                barn++;
+                flag++;
+                Thread.Sleep(50);
+            }
         }
     }
 }

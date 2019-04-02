@@ -62,13 +62,13 @@ namespace SAVWMS.ConnectControl
         bool Receive()
         {
             PackageToData packageToData = new PackageToData(NewBarVolData);
+            
             //接受设备数据
                 try
                 {
                     byte[] buffer = new byte[1024 * 1024];
                     int n = socket.Receive(buffer);
-                    Package package = CenterServerNet.BytesToPackage(buffer);
-
+                    Package package = CenterServerNet.BytesToPackage(buffer);                    
                     switch (package.message)
                     {
                         case Messagetype.package: NewDeviceData(package);return true;
@@ -119,7 +119,9 @@ namespace SAVWMS.ConnectControl
                     theSendData = (bvdata)bf.Deserialize(ms);
                 }
                 if(!Data.barvolumedata.PutBvdata(theSendData)) Console.WriteLine("Put Bvdata error!");
-            }catch(Exception e)
+                Console.WriteLine("put Bvdata success!");
+            }
+            catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }

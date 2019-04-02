@@ -6,14 +6,14 @@ namespace SAVWMS.ConnectControl
 {
     public class DeviceIoC
     {       
-        public static DeviceTask CreateDeviceTask(string TaskCategory,string Taskname,DeviceConnectControl dc,int id)
+        public static DeviceTask CreateDeviceTask(string TaskCategory,string Taskname,ref DeviceConnectControl dc,int id)
         {
             DeviceTask task;
-            if (dc == null) return null;
+            if (dc == null) { Console.WriteLine("DeviceConnectControl is null :error DeviceIoC.CreateDeviceTask"); return null; }
             switch(TaskCategory)
             {
-                case "BVTask":task=new BVTask(id,Taskname,dc); return task;
-                default:return null;
+                case "BVTask":task=new BVTask(id,Taskname,ref dc); return task;
+                default:Console.WriteLine("error"); return null;
             }
         }
     }

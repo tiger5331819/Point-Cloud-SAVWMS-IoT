@@ -36,7 +36,7 @@ namespace SAVWMS
                     {
                         switch (data.messagetype)
                         {
-                            case Messagetype.order: orderTODO(); break;
+                            case Messagetype.order: orderTODO();  break;
                             //case Messagetype.update: updateTODO(); break;
                         }
                     }
@@ -54,30 +54,37 @@ namespace SAVWMS
         {
             switch (data.codemode)
             {
-                case Codemode.monitor: monitor(data.codemode); break;
+                case Codemode.monitor: monitor(); break;
                 default: codemode(data.codemode); break;
             }
         }
 
-        void monitor(Codemode codemode)
+        public void monitor()
         {
             for (int i = 0; i < centerManager.Max; i++)
             {
                 IPList ip = centerManager.iplist[i];
+                
                 if (ip.IP == data.DeviceID)
                 {
+                    Console.WriteLine(i);
                     task=cc.taskManager.GetDeviceTask(i);
                     if (task == null)
                     {
                         string TaskCategory = "BVTask";
                         string Taskname = "test";
                         task = cc.taskManager.SetDeviceTask(TaskCategory,Taskname,i);
+                        if (task == null) Console.WriteLine("task is null");
+                        int a;
+                        string b;
+                        task.GetTaskConfig(out a, out b);
+                        Console.WriteLine(a+ "  " + b);
                     }
                 }
             }
 
         }
-        void codemode(Codemode codemode)
+        public void codemode(Codemode codemode)
         {
             object o = new object();
             switch(codemode)
@@ -95,5 +102,6 @@ namespace SAVWMS
                 a.show();
             }
         }
+        public int ID() { return UserID; }
     }
 }

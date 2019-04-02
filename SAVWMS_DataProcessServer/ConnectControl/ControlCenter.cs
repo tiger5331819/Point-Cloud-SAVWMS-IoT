@@ -43,9 +43,7 @@ namespace SAVWMS
             check.IsBackground = true;
             check.Start();
             taskManager = new TaskManager(ref cc);
-
             shell();
-
         }
         void CreateThreadToCheckData()
         {
@@ -70,7 +68,7 @@ namespace SAVWMS
                             deviceList[i].Live = true;
                             deviceList[i].ID = i;
                             deviceList[i].Name = centerManager.Data.Devicedata[i].IP;
-                            DeviceC[i] = new DeviceConnectControl(ref centerManager.Data.Devicedata[i], ref centerManager,Max);
+                            DeviceC[i] = new DeviceConnectControl(ref centerManager.Data.Devicedata[i], ref centerManager,Max);                        
                         }
                     }
                     else if (deviceList[i].Live) { deviceList[i].Live = false; Console.WriteLine(centerManager.Data.Devicedata[i].ID); }
@@ -95,10 +93,12 @@ namespace SAVWMS
         {
             var Devicelist = from r in centerManager.iplist where r.ID != null orderby r.ID descending select r;
             var Userlist = from r in centerManager.UserList where r.ID != null orderby r.ID descending select r;
+            
             while (true)
             {
                 try
                 {
+                    
                     article = Console.ReadLine();
                     switch (article)
                     {
@@ -110,7 +110,10 @@ namespace SAVWMS
                     }
                     article = null;
                 }
-                catch (Exception) { }
+                catch (Exception e)
+                {
+                    WriteLine(e.ToString());
+                }
 
             }
         }
@@ -122,28 +125,22 @@ namespace SAVWMS
             article = ReadLine();
 
             int flag = Convert.ToInt32(article);
-            DeviceConnectControl d = DeviceC[flag];
+            ClientConnectControl d = UserC[flag];
             WriteLine(d.ID());
 
-            //while (true)
-            //{
-            //    article = null;
-            //    article = ReadLine();
-            //    switch (article)
-            //    {
-            //        case "back": return;
-            //        case "play": TODO(d, Codemode.play); break;
-            //        case "monitor": TODO(d, Codemode.monitor); break;
-            //        case "sendvolume": TODO(d, Codemode.sendvolume); break;
-            //        case "stopsendvolume": TODO(d, Codemode.stopsendvolume); break;
-            //        case "stop": TODO(d, Codemode.stop); break;
-            //    }
-            //}
-
+            while (true)
+            {
+                article = null;
+                article = ReadLine();
+                switch (article)
+                {
+                    case "back": return;
+                    case "play": d.codemode(Codemode.play); break;
+                    case "show": d.codemode(Codemode.sendvolume); break;
+                    case "stop": d.codemode(Codemode.stop); break;
+                }
+            }
         }
-        //void TODO(DeviceConnectControl Device, Codemode codemode)
-        //{
-        //    Device.SendCode(codemode);
-        //}
+
     }
 }

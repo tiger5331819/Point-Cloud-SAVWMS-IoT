@@ -12,8 +12,8 @@ namespace SAVWMS
 {
     [Serializable]
     public class DeviceData : TypeData
-    {       
-        public List<barvolumedata> barvolumedatas = new List<barvolumedata>(100);
+    {
+        public DeviceData Newdata = null;
         public barvolumedata barvolumedata;
         public NetIP ip;
         public string IP;
@@ -23,6 +23,7 @@ namespace SAVWMS
         public DeviceData()
         {
             ip = new NetIP();
+            barvolumedata = new barvolumedata();
         }
     }
 
@@ -34,8 +35,6 @@ namespace SAVWMS
         public string DeviceID;
 
         public Boolean Live = false;
-        public Messagetype messagetype;
-        public Codemode codemode;
         public UserData()
         {
             DeviceID = null;
@@ -51,13 +50,14 @@ namespace SAVWMS
 
         public CenterSeverData(int Max)
         {
-            ip = new NetIP();
-            Devicedata = new DeviceData[Max];
+            ip = new NetIP();            
+            Devicedata = new DeviceData[Max];            
             Userdata = new UserData[Max];
-            for (int i = 0; i < Max; i++)
+            for (int i = 0; i < Max-1; i++)
             {
-                Devicedata[Max] = null;
-                Userdata[Max] = null;
+                
+                Devicedata[i] = null;
+                Userdata[i] = null;
             }
         }
     }
@@ -101,7 +101,9 @@ namespace SAVWMS
                 socket.Listen(10);
                 Console.WriteLine("服务器开始监听");
 
-                AcceptInfo(socket);
+                Thread Accept = new Thread(AcceptInfo);
+                Accept.IsBackground = true;
+                Accept.Start(socket);
             }
             catch (Exception ex)
             {
@@ -158,10 +160,11 @@ namespace SAVWMS
                             Data.Userdata[i] = packageToUserData(package);
                             Data.Userdata[i].IP = client.RemoteEndPoint.ToString();
                             Data.Userdata[i].Live = true;
-                            Data.socket = client;
+                            Data.Userdata[i].socket = client;
 
                             centerManager.UserList[i].ID = Data.Userdata[i].ID;
                             centerManager.UserList[i].IP = client.RemoteEndPoint.ToString();
+                            break;
                         }
                         i++;
                     }
@@ -182,11 +185,11 @@ namespace SAVWMS
                                 Data.Devicedata[i] = packageToDeviceData(package);
                                 Data.Devicedata[i].IP = client.RemoteEndPoint.ToString();
                                 Data.Devicedata[i].Live = true;
-                                Data.socket = client;
+                                Data.Devicedata[i].socket = client;
 
                                 centerManager.iplist[i].ID = Data.Devicedata[i].ID;
                                 centerManager.iplist[i].IP = client.RemoteEndPoint.ToString();
-
+                                break;
                             }
                             i++;
                         }
@@ -288,8 +291,7 @@ namespace SAVWMS
             }
 
         }
-        
-
+       
         public Package CreatCodeToPackage(Codemode codemode)
         {
             Package package = new Package();
